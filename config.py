@@ -1,39 +1,39 @@
 """
 Config
-
-In shares_pool stored bougth shares
-In currency_pool stored request for main window bottom info
-export_file used for export simple data (name;price) to link with office documents
 """
 cache_folder = "data/"
 
-shares_types = ["bonds", "etf", "currency", "crypto"]
+# Used only for GUI menu
+shares_types = ["common", "bonds", "etf", "currency", "crypto"]
 
+# For export simple data (name;price) to link with office documents
 export_file = "/home/this/Documents/market_rates.txt"
 
+# In shares_pool stored bougth shares, as portfolio and for export
 shares_pool = [
     { "type": "bonds",
-      "name": "SU26233",
-      "buy_date": "2021-05-13",
+      "name": "SU26224",
+      "buy_date": "2021-07-14",
       "price": 90.177 },
     { "type": "bonds",
-      "name": "SU26235",
-      "buy_date": "2021-05-14",
+      "name": "SU26238",
+      "buy_date": "2021-07-14",
       "price": 92.1 },
     { "type": "etf",
-      "name": "FXUS",
-      "buy_date": "2021-05-14",
-      "price": 5588 },
+      "name": "FXCN",
+      "buy_date": "2021-07-14",
+      "price": 3200 },
     { "type": "etf",
       "name": "VTBX",
-      "buy": "2021-05-17",
+      "buy": "2021-07-14",
       "price": 139.8 },
-    { "type": "etf",
-      "name": "FXCN",
-      "buy": "2021-05-17",
-      "price": 3820 }
+    { "type": "common",
+      "name": "SBER",
+      "buy": "2021-07-14",
+      "price": 310.42 }
  ]
 
+# In currency_pool stored request for GUI bottom info and for export
 currency_pool = [
     { "type": "currency",
       "name": "USD",
@@ -42,8 +42,7 @@ currency_pool = [
     { "type": "currency",
       "name": "EUR",
       "buy_date": "None",
-      "price": 0
-    },
+      "price": 0 },
     { "type": "crypto",
       "name": "BTC",
       "buy_date": "None",

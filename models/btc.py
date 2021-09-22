@@ -2,9 +2,8 @@
 """
 Model for BTC
 """
-
 import json
-from models.base import Shares
+from models.base_model import Shares
 
 
 class Btc(Shares):
@@ -13,16 +12,12 @@ class Btc(Shares):
     """
     market = "crypto"
     board = "btc"
+    provider = "coindesk"
+
     def __init__(self, share_attrs=None):
         if share_attrs:
             super().__init__(share_attrs)
 
-    @staticmethod
-    def request_url(date):
-        return str("https://api.coindesk.com/v1/bpi/historical/close.json?" +
-                           f"start={date.isoformat()}&end={date.isoformat()}")
-
-    @staticmethod
     def convert_data(data, date):
         '''
         Change data structure to common format
@@ -41,3 +36,11 @@ class Btc(Shares):
             dict_json["history.cursor"]["data"].append([0,items_count,100])
             data = json.dumps(dict_json, ensure_ascii=False, indent=4)
         return data
+
+    def request_url(cls, date):
+        """
+        Request url
+        """
+        url = str("https://api.coindesk.com/v1/bpi/historical/close.json?" +
+                  f"start={date.isoformat()}&end={date.isoformat()}")
+        return url

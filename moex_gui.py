@@ -2,8 +2,9 @@
 """
 App for request and show russian shares market and currency data,
 for one share from app input or bunch of shares (portfolio) stored in config.py.
-Profile also show difference from share buy price to share price for input date.
+App also shows difference between share buy price and share price for input date.
 If input date data not stored it'll be requested from internet
+GUI using moex.py as main module for data manipulations
 """
 import datetime as dt
 import tkinter as tk
@@ -266,6 +267,8 @@ def update_market():
     date = check_date(app.source_date.get())
     if not date:
         return
+    buttons = [app.update_button, app.get_share_button,
+               app.portfolio_button, app.export_button]
     app.warnings_label.configure(text = "Updating...")
     update_status = update_market_history(date)
     app.after(1000, lambda: app.warnings_label.configure(text = f"{update_status}"))

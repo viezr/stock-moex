@@ -8,4 +8,7 @@ GUI App for request and show russian shares market and currency data.
 - save request data for future using.
 - by default, start with updating shares from portfolio for last weekday.
 - main module may be used without GUI
-- may be extended by adding modules for shares.
+- may be extended by adding new modules for shares.
+- common shares, bonds, etf, currency and BTC modules included
+## Notes
+Currency module created for russian central bank API, not stock.
