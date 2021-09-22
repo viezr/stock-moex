@@ -1,6 +1,6 @@
-# Image generator
+# Stock data viewer
 ![image](screenshot.png)  
-GUI App for request and show russian shares market and currency data.  
+GUI App for request and show russian shares market and currency data, written in Python.  
 ## Features
 - request and show share or currency data for input date.
 - request and show data about bunch of shares (portfolio) stored in config.
