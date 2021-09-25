@@ -24,16 +24,15 @@ def update_market_history(date):
     """
     states = {}
     futures = []
-    for class_name, Share_class in shares_classes.items():
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures.append(executor.submit(request_data, Share_class, date))
-            states[Share_class.__name__] = futures[-1].result()
-    for fut in futures:
-        concurrent.futures.as_completed(fut)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for class_name, Share_class in shares_classes.items():
+            future_update = executor.submit(request_data, Share_class, date)
+            states[Share_class.__name__] = future_update.result
+    concurrent.futures.as_completed(future_update)
 
     info_str = " "
     for state in states:
-        if not states[state]:
+        if not states[state]():
             info_str += f"{state} Fail. "
     return f"Updated{info_str}"
 
@@ -71,11 +70,11 @@ def get_shares_info(date, shares_request):
         os.makedirs(cache_folder)
 
     shares_out = {}
-    for share in shares_request:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for share in shares_request:
             future_share = executor.submit(share_thread, share)
-            future_return = future_share.result()
-        shares_out[share["name"]] = future_return
+            future_return = future_share.result
+            shares_out[share["name"]] = future_return()
     concurrent.futures.as_completed(future_share)
 
     return shares_out
@@ -117,13 +116,8 @@ if __name__ == "__main__":
     For console run
     """
     if check_internet():
-        source_date = dt.date(2021, 9, 13)
-        shares_request = [ { "type": "common",
-                        "name": "sber",
-                        "buy_date": None,
-                        "price": 0 } ]
-
+        source_date = dt.date(2021, 9, 24)
         print(source_date)
-        print("Request:", shares_request)
+        print("Request:", shares_pool)
         print("Update market:", update_market_history(source_date))
-        print("Answer:", get_shares_info(source_date, shares_request))
+        print("Answer:", get_shares_info(source_date, shares_pool))
