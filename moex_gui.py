@@ -1,22 +1,24 @@
 #!/usr/bin/env python3
-"""
+'''
 App for request and show russian shares market and currency data,
 for one share from app input or bunch of shares (portfolio) stored in config.py.
 App also shows difference between share buy price and share price for input date.
 If input date data not stored it'll be requested from internet
 GUI using moex.py as main module for data manipulations
-"""
+'''
 import datetime as dt
 import tkinter as tk
 from threading import Thread
-from moex import get_shares_info, update_market_history, export_data
+
+from moex import get_shares_info, update_market_history
+from moex import export_data, get_last_workday
 from config import boards, export_file, shares_pool, currency_pool
 
 
 class SharesApp(tk.Tk):
-    """
+    '''
     Main class for application
-    """
+    '''
     def __init__(self):
         tk.Tk.__init__(self, className="Moex")
 
@@ -43,15 +45,9 @@ class SharesApp(tk.Tk):
         self.date_entry = tk.Entry(self, text = "date",
            bg=label_col["bg"], fg=label_col["fg"], font=main_font, width=10)
         self.source_date = tk.StringVar()
-        date = dt.date.today()
         # if today week day is sauturday, sunday or monday, date set to friday
-        if date.weekday() in range(1,6):
-            t_delta = 1
-        elif date.weekday() == 0:
-            t_delta = 3
-        else:
-            t_delta = 2
-        self.source_date.set(date - dt.timedelta(days = t_delta))
+        self.source_date.set(get_last_workday())
+
         self.date_entry["textvariable"] = self.source_date
         self.date_entry.grid(row=0, column=0)
 
@@ -129,23 +125,23 @@ class SharesApp(tk.Tk):
         self.quit_button.grid(row=5, column=0, columnspan=4)
 
     def set_share_type(self):
-        """
+        '''
         Set button name for selected share type
-        """
+        '''
         board_attrs = [x for x in boards if x["board"] == self.share_type.get()][0]
 
         self.MenuBttn.configure(text=f"{board_attrs['name']}")
 
 
 def gen_table(input_dict,shares_pool_gen):
-    """
+    '''
     Function for generate table with shares data
-    """
+    '''
     def set_share_buy(share):
-        """
+        '''
         Return share attributes from saved pool in config.py
         for calculate "buy-sell" difference
-        """
+        '''
         for one_share in shares_pool:
             if one_share["name"] in share[1]:
                 return one_share
@@ -251,9 +247,9 @@ def gen_table(input_dict,shares_pool_gen):
     # End of table
 
 def check_date(date):
-    """
+    '''
     Checking entry date format
-    """
+    '''
     try:
         date = dt.date.fromisoformat(date)
     except:
@@ -263,9 +259,9 @@ def check_date(date):
     return date
 
 def update_market():
-    """
+    '''
     Button function to update market
-    """
+    '''
     date = check_date(app.source_date.get())
     if not date:
         return
@@ -277,9 +273,9 @@ def update_market():
     show_currency()
 
 def show_share():
-    """
+    '''
     Button function for request one share
-    """
+    '''
     app.warnings_label.configure(text = " ")
     date = check_date(app.source_date.get())
     if not date:
@@ -302,9 +298,9 @@ def show_share():
 
 
 def show_portfolio():
-    """
+    '''
     Request and show portfolio shares stored in config.py
-    """
+    '''
     app.warnings_label.configure(text = " ")
     date = check_date(app.source_date.get())
     if not date:
@@ -316,9 +312,9 @@ def show_portfolio():
     th_gen.start()
 
 def show_currency():
-    """
+    '''
     Request and show currency-rub and bitcoin-usd rates at bottom
-    """
+    '''
     date = check_date(app.source_date.get())
     if not date:
         return
@@ -335,9 +331,9 @@ def show_currency():
     app.currency_label.configure(text = show_string)
 
 def export_to_file():
-    """
+    '''
     Export data for shares in config.py to a file
-    """
+    '''
     app.warnings_label.configure(text = " ")
     date = check_date(app.source_date.get())
     if not date:
@@ -349,9 +345,9 @@ def export_to_file():
     app.warnings_label.configure(text = f"File exported: {export_file}")
 
 def at_start():
-    """
+    '''
     Threading for startup queries
-    """
+    '''
     th1 = Thread(target=update_market, args=())
     th1.start()
     th1.join()
@@ -361,9 +357,9 @@ def at_start():
     th3.start()
 
 def quit():
-    """
+    '''
     Button function for quit app
-    """
+    '''
     app.destroy()
 
 if __name__ == "__main__":

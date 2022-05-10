@@ -5,6 +5,7 @@ Data stored as dict in files "/data/*.json" for quick futher access
 May be used without GUI.
 '''
 import os
+import sys
 import json
 import socket
 import datetime as dt
@@ -83,8 +84,7 @@ def export_data(date):
     Export data for shares in config.py to a file (path in config.py),
     in simple format "name;price" for link to office document
     '''
-    shares_dict = get_shares_info(date, shares_pool)
-    shares_dict.update(get_shares_info(date, export_pool))
+    shares_dict = get_shares_info(date, export_pool)
     if not shares_dict:
         return False
 
@@ -95,6 +95,56 @@ def export_data(date):
             data += "\n" + share_name + ";" + str(share_price)
         file.write(data)
     return True
+
+def console_run(sys_argv):
+    '''
+    Run app without GUI.
+    '''
+    argv_support = {
+        "-x": "Export prices to external file.",
+        "-c": "Request today rates.",
+        "-l": "Request last workday rates.",
+        "-y": "Request yesterday rates.",
+        "-h": "Print help."
+    }
+    if "-h" in sys_argv or not sys_argv:
+        if not sys_argv:
+            print("No command line arguments specified.")
+        for arg, description in argv_support.items():
+            print("    ", arg, " - ",description)
+        return
+    if "-c" in sys_argv:
+        source_date = dt.date.today()
+    elif "-y" in sys_argv:
+        source_date = dt.date(2022, 5, 6)
+        source_date = dt.date.today() - dt.timedelta(days=1)
+    elif "-l" in sys_argv:
+        source_date = get_last_workday()
+    else:
+        print("No known command line arguments specified.")
+        return
+
+    if not os.path.exists(cache_folder):
+        os.makedirs(cache_folder)
+    if not check_internet():
+        print("Internet connection problem occured.")
+        return
+    execute(source_date)
+    if "-x" in sys_argv:
+        export_data(source_date)
+
+def get_last_workday():
+    '''
+    Return last workday date.
+    '''
+    date = dt.date.today()
+    if date.weekday() in range(1,6):
+        t_delta = 1
+    elif date.weekday() == 0:
+        t_delta = 3
+    else:
+        t_delta = 2
+    return (date - dt.timedelta(days = t_delta))
 
 def check_internet():
     '''
@@ -111,15 +161,10 @@ def check_internet():
             pass
     return False
 
-def console_run(source_date):
+def execute(source_date):
     '''
-    Run app without GUI.
+    Execute program for console run.
     '''
-    if not os.path.exists(cache_folder):
-        os.makedirs(cache_folder)
-
-    if not check_internet():
-        return
     print(source_date)
     print("Update market:", update_market_history(source_date))
     shares = get_shares_info(source_date, shares_pool)
@@ -130,10 +175,7 @@ def console_run(source_date):
                 change = round(((val[2] / price * 100) - 100), 2)
         print(f"{key:<10} Current {val[2]:>8}\tBuy {price:>8} " +
             f"\tChange {change:>7} %")
-    export_data(source_date)
 
 
 if __name__ == "__main__":
-    #source_date = dt.date(2022, 5, 6)
-    source_date = dt.date.today()
-    console_run(source_date)
+    console_run(sys.argv[1:])
