@@ -3,48 +3,61 @@ Config
 """
 cache_folder = "data/"
 
-# Used only for GUI menu
-shares_types = ["common", "bonds", "etf", "currency", "crypto"]
-
 # For export simple data (name;price) to link with office documents
-export_file = "/home/this/Documents/market_rates.txt"
+export_file = "/home/this/market_rates.txt"
 
-# In shares_pool stored bougth shares, as portfolio and for export
+boards = [
+    {"name": "Bonds", "board": "tqob", "market": "bonds", "provider_name": "moex"},
+    {"name": "ETF","board": "tqtf", "market": "shares", "provider_name": "moex"},
+    {"name": "Common", "board": "tqbr", "market": "shares", "provider_name": "moex"},
+    {"name": "Currency RU", "board": "cbr", "market": "currency", "provider_name": "cbr"},
+    {"name": "Currency GE", "board": "nbg", "market": "currency", "provider_name": "nbg"},
+    {"name": "BTCUSD", "board": "btc", "market": "crypto", "provider_name": "coindesk"},
+    {"name": "Crypto", "board": "binance", "market": "crypto", "provider_name": "binance"}
+]
+
+# In shares_pool stored bougth shares, as portfolio
+# showed at GUI startup
 shares_pool = [
-    { "type": "bonds",
-      "name": "SU26224",
-      "buy_date": "2021-07-14",
-      "price": 90.177 },
-    { "type": "bonds",
-      "name": "SU26238",
-      "buy_date": "2021-07-14",
-      "price": 92.1 },
-    { "type": "etf",
-      "name": "FXCN",
-      "buy_date": "2021-07-14",
-      "price": 3200 },
-    { "type": "etf",
-      "name": "VTBX",
-      "buy": "2021-07-14",
-      "price": 139.8 },
-    { "type": "common",
-      "name": "SBER",
-      "buy": "2021-07-14",
-      "price": 310.42 }
+    {
+        "board": "tqob",
+        "name": "SU26224",
+        "buy_date": "2021-07-14",
+        "price": 90.177
+    },
+    {
+        "board": "tqtf",
+        "name": "SBER",
+        "buy": "2021-07-14",
+        "price": 310.42
+    },
+    {
+        "board": "tqtf",
+        "name": "VTBX",
+        "buy_date": "2021-05-17",
+        "price": 139.8
+    },
+    {
+        "board": "tqtf",
+        "name": "FXCN",
+        "buy_date": "2021-05-17",
+        "price": 3820
+    }
  ]
 
-# In currency_pool stored request for GUI bottom info and for export
+# List of currencies for GUI bottom info
 currency_pool = [
-    { "type": "currency",
-      "name": "USD",
-      "buy_date": "None",
-      "price": 0 },
-    { "type": "currency",
-      "name": "EUR",
-      "buy_date": "None",
-      "price": 0 },
-    { "type": "crypto",
-      "name": "BTC",
-      "buy_date": "None",
-      "price": 0 },
+      {"board": "cbr", "name": "USDRUB"},
+      {"board": "nbg", "name": "EURRUB"},
+      {"board": "btc", "name": "BTCUSD"}
  ]
+
+# List for exporting prices to file
+export_pool = [
+    {"board": "tqtf", "name": "VTBX"},
+    {"board": "tqtf", "name": "FXCN"},
+    {"board": "cbr", "name": "USDRUB"},
+    {"board": "cbr", "name": "EURRUB"},
+    {"board": "btc", "name": "BTCUSD"},
+    {"board": "binance", "name": "BTCUSDT"},
+]

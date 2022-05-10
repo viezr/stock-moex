@@ -10,7 +10,7 @@ import datetime as dt
 import tkinter as tk
 from threading import Thread
 from moex import get_shares_info, update_market_history, export_data
-from config import shares_types, export_file, shares_pool, currency_pool
+from config import boards, export_file, shares_pool, currency_pool
 
 
 class SharesApp(tk.Tk):
@@ -72,10 +72,10 @@ class SharesApp(tk.Tk):
         self.share_type = tk.StringVar()
         self.share_type.set = None
         self.Menu = tk.Menu(self.MenuBttn, tearoff = 0)
-        for s_type in shares_types:
+        for board in boards:
             self.Menu.add_radiobutton(
-                label = s_type.capitalize(), variable = self.share_type,
-                value = s_type.capitalize(), command=self.set_share_type,
+                label = board["name"], variable = self.share_type,
+                value = board["board"], command=self.set_share_type,
                 activebackground=btn_yellow["hover"], activeforeground=btn_yellow["fg"],
                 font=main_font)
         self.MenuBttn["menu"] = self.Menu
@@ -132,7 +132,9 @@ class SharesApp(tk.Tk):
         """
         Set button name for selected share type
         """
-        self.MenuBttn.configure(text=f"{self.share_type.get()}")
+        board_attrs = [x for x in boards if x["board"] == self.share_type.get()][0]
+
+        self.MenuBttn.configure(text=f"{board_attrs['name']}")
 
 
 def gen_table(input_dict,shares_pool_gen):
@@ -289,7 +291,7 @@ def show_share():
     if not share_name:
         return app.warnings_label.configure(text = "Share name not set")
 
-    one_share = [ { "type": share_type, "name": share_name,
+    one_share = [ { "board": share_type, "name": share_name,
                     "buy_date": "None", "price": 0 } ]
 
     input_dict = get_shares_info(date, one_share)
@@ -320,20 +322,16 @@ def show_currency():
     date = check_date(app.source_date.get())
     if not date:
         return
-    show_string = ""
     input_dict = get_shares_info(date, currency_pool)
     if not input_dict:
         return app.currency_label.configure(text = "Currency not found")
 
-    i = 0
-    dict_len = len(input_dict)
+    show_list = []
     for share in input_dict:
-        if i < dict_len - 1:
-            tab = "\t"
-        else:
-            tab = ""
-        show_string += f"{input_dict[share][1]}: {input_dict[share][2]} {tab}"
-        i += 1
+        cur_name, cur_rate = input_dict[share][1:3]
+        cur_name = cur_name[:3] + "-" + cur_name[3:]
+        show_list.append(f"{cur_name}: {cur_rate}")
+    show_string = '    '.join(show_list)
     app.currency_label.configure(text = show_string)
 
 def export_to_file():
